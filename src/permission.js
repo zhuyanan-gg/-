@@ -3,12 +3,15 @@ import store from '@/store/index'
 
 const whiteList = ['/login', '/404']
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async(to, from, next) => {
   const token = store.getters.token
   if (token) {
     if (to.path === '/login') {
       next('/')
     } else {
+      if (!store.getters.userId) {
+        await store.dispatch('user/asyncGetUserInfo')
+      }
       next()
     }
   } else {

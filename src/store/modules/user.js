@@ -1,8 +1,9 @@
-import { getToken, setToken, removeToken } from '@/utils/auth'
-import { login } from '@/api/user'
+import { getToken, setToken, removeToken, setTime } from '@/utils/auth'
+import { login, getUserInfo, getUserDetailById } from '@/api/user'
 
 const state = {
-  token: getToken()
+  token: getToken(),
+  userInfo: {}
 }
 // 修改状态
 const mutations = {
@@ -10,6 +11,9 @@ const mutations = {
   setToken(state, token) {
     state.token = token
     token ? setToken(token) : removeToken()
+  },
+  setUserInfo(state, userInfo) {
+    state.userInfo = { ...userInfo }
   }
 }
 // 执行异步
@@ -18,12 +22,22 @@ const actions = {
     try {
       const token = await login(data)
       commit('setToken', token)
+      setTime()
       return true
     } catch (error) {
       console.log(error)
       commit('setToken', null)
       return false
     }
+  },
+  async asyncGetUserInfo({ commit }) {
+    const data = await getUserInfo()
+    const baseInfo = await getUserDetailById(data.userId)
+    commit('setUserInfo', { ...data, ...baseInfo })
+  },
+  logout({ commit }) {
+    commit('setToken', null)
+    commit('setUserInfo', {})
   }
 }
 export default {

@@ -40,6 +40,7 @@ module.exports = {
     proxy: {
       '^/api': {
         target: 'http://ihrm.itheima.net/', // 我们要代理的地址
+        // target: 'http://ihrm-java.itheima.net/', // 我们要代理的地址
         changeOrigin: true // 是否跨域 需要设置此值为true 才可以让本地服务代理我们发出请求
       }
     }

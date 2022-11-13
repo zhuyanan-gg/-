@@ -15,5 +15,8 @@ export const getUserInfo = () => {
   })
 }
 
-export function logout() {
+export const getUserDetailById = (userId) => {
+  return request({
+    url: `/sys/user/${userId}`
+  })
 }
