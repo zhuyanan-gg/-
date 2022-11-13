@@ -1,8 +1,36 @@
+import { getToken, setToken, removeToken } from '@/utils/auth'
+import { login } from '@/api/user'
+
+const state = {
+  token: getToken()
+}
+// 修改状态
+const mutations = {
+  // 设置token
+  setToken(state, token) {
+    state.token = token
+    token ? setToken(token) : removeToken()
+  }
+}
+// 执行异步
+const actions = {
+  async userLogin({ commit }, data) {
+    try {
+      const token = await login(data)
+      commit('setToken', token)
+      return true
+    } catch (error) {
+      console.log(error)
+      commit('setToken', null)
+      return false
+    }
+  }
+}
 export default {
   namespaced: true,
-  state: {},
-  mutations: {},
-  actions: {}
+  state,
+  mutations,
+  actions
 }
 
 // import { login, logout, getInfo } from '@/api/user'

@@ -3,21 +3,27 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">
+          <img src="@/assets/common/login-logo.png" alt="">
+        </h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="mobile">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
+        <!-- tabindex按下tab键可以让鼠标光标转到下一行 -->
+        <!-- auto-complete 自动补齐 -->
+
         <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
+          ref="mobile"
+          v-model="loginForm.mobile"
+          placeholder="请输入手机号"
+          name="mobile"
           type="text"
           tabindex="1"
           auto-complete="on"
+          @keyup.enter.native="handleLogin"
         />
       </el-form-item>
 
@@ -25,12 +31,13 @@
         <span class="svg-container">
           <svg-icon icon-class="password" />
         </span>
+        <!-- native一个修饰符，表示原生的事件，没多大作用 -->
         <el-input
           :key="passwordType"
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="请输入密码"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -41,11 +48,11 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button class="loginBtn" :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
 
       <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
+        <span style="margin-right:20px;">手机号: 13800000002</span>
+        <span> 密码: 123456</span>
       </div>
 
     </el-form>
@@ -53,33 +60,23 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+import { validMobile } from '@/utils/validate'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
-      } else {
-        callback()
-      }
+    const validateMobile = (rule, value, cb) => {
+      validMobile(value) ? cb() : cb(new Error('手机号不合法'))
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        mobile: '13800000002',
+        password: '123456'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        mobile: [{ required: true, trigger: 'blur', validator: validateMobile }],
+        password: [{ required: true, trigger: 'blur', message: '密码不能为空' }, { min: 6, max: 15, trigger: 'blur', message: '密码的长度应该在6-15个字符之间' }]
       },
       loading: false,
       passwordType: 'password',
@@ -94,7 +91,11 @@ export default {
       immediate: true
     }
   },
+  mounted() {
+    // this.$store.dispatch('user/response', this.loginForm)
+  },
   methods: {
+    ...mapActions(['user/userLogin']),
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -105,21 +106,19 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
+    async handleLogin() {
+      try {
+        this.loading = true
+        await this.$refs.loginForm.validate()
+        const res = await this['user/userLogin'](this.loginForm)
+        this.loading = false
+        if (res) {
+          this.$router.push('/')
         }
-      })
+      } catch (error) {
+        console.log('验证失败')
+        this.loading = false
+      }
     }
   }
 }
@@ -130,7 +129,7 @@ export default {
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg:#283443;
-$light_gray:#fff;
+$light_gray:#68b0fe;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -141,6 +140,10 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  // 在css里面路径出现@记得在前面加~
+  background-image: url('~@/assets/common/szxy.jpg'); // 设置背景图片
+  background-position: center; // 将图片位置设置为充满整个屏幕
+
   .el-input {
     display: inline-block;
     height: 47px;
@@ -162,12 +165,20 @@ $cursor: #fff;
       }
     }
   }
-
+  .loginBtn {
+    background: #407ffe;
+    height: 60px;
+    line-height: 30px;
+    font-size: 24px;
+  }
   .el-form-item {
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.9); // 输入登录表单的背景色
     border-radius: 5px;
     color: #454545;
+  }
+   .el-form-item__error {
+    color: #fff
   }
 }
 </style>
@@ -200,6 +211,7 @@ $light_gray:#eee;
     span {
       &:first-of-type {
         margin-right: 16px;
+        padding-left: 80px;
       }
     }
   }

@@ -1,10 +1,33 @@
+import router from './router'
+import store from '@/store/index'
+
+const whiteList = ['/login', '/404']
+
+router.beforeEach((to, from, next) => {
+  const token = store.getters.token
+  if (token) {
+    if (to.path === '/login') {
+      next('/')
+    } else {
+      next()
+    }
+  } else {
+    if (whiteList.includes(to.path)) {
+      next()
+    } else {
+      next('/login')
+    }
+  }
+})
+
 // import router from './router'
 // import store from './store'
 // // 提示消息
 // import { Message } from 'element-ui'
-// // 进度条组件
+// // 进度条组件,样式
 // import NProgress from 'nprogress' // progress bar
 // import 'nprogress/nprogress.css' // progress bar style
+
 // import { getToken } from '@/utils/auth' // get token from cookie
 // import getPageTitle from '@/utils/get-page-title'
 
