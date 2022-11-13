@@ -21,7 +21,7 @@
               首页
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://gitee.com/shuiruohanyu/hrsaas53">
+          <a target="_blank" href="https://gitee.com/zhuyanan-gg/hr_assa">
             <el-dropdown-item>项目地址</el-dropdown-item>
           </a>
           <el-dropdown-item divided @click.native="logout">
