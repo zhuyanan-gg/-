@@ -12,6 +12,7 @@ const mutations = {
     state.token = token
     token ? setToken(token) : removeToken()
   },
+  // 设置头像和姓名
   setUserInfo(state, userInfo) {
     state.userInfo = { ...userInfo }
   }
