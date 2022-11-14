@@ -115,3 +115,14 @@ export function param2Obj(url) {
   })
   return obj
 }
+
+export function list2tree(depts, rootValue) {
+  // console.log(depts)
+  return depts.reduce((prev, curr, index, arr) => {
+    curr.children = arr.filter(item => item.pid === curr.id)
+    if (curr.pid === rootValue) {
+      prev.push(curr)
+    }
+    return prev
+  }, [])
+}
