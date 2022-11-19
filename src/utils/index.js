@@ -126,3 +126,13 @@ export function list2tree(depts, rootValue) {
     return prev
   }, [])
 }
+// export function list2tree(depts, rootValue) {
+//   const arr = []
+//   depts.forEach((curr) => {
+//     curr.children = depts.filter(item => item.pid === curr.id)
+//     if (curr.pid === rootValue) {
+//       arr.push(curr)
+//     }
+//   })
+//   return arr
+// }

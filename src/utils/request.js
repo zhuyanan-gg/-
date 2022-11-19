@@ -4,8 +4,8 @@ import store from '@/store'
 import { getTime } from '@/utils/auth'
 import router from '@/router'
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API,
-  timeout: 5000
+  baseURL: process.env.VUE_APP_BASE_API
+  // timeout: 5000
 })
 
 const expirsTime = 8 * 60 * 60 * 1000
