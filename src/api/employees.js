@@ -21,3 +21,11 @@ export function addEmployee(data) {
     data
   })
 }
+// 批量excel导入员工
+export function batchEmployee(data) {
+  return request({
+    url: '/sys/user/batch',
+    method: 'post',
+    data
+  })
+}

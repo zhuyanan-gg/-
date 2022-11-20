@@ -7,7 +7,7 @@
         <template #left> 显示{{ total }}条数据 </template>
         <template #right>
           <el-button type="danger" size="samll">excel导出</el-button>
-          <el-button type="success" size="samll">excel导入</el-button>
+          <el-button type="success" size="samll" @click="$router.push('./import')">excel导入</el-button>
           <el-button type="primary" size="samll" @click="showDialog = true">新增员工</el-button>
         </template>
       </PageTools>
@@ -71,7 +71,7 @@
       </el-card>
 
       <!-- 对话框 -->
-      <AddDemployee :show-dialog.sync="showDialog" /></div>
+      <AddDemployee :show-dialog.sync="showDialog" @update-list="loadList()" /></div>
   </div>
 </template>
 
@@ -136,7 +136,7 @@ export default {
         }
         this.loadList()
       } catch (error) {
-        console.log(error)
+        this.$message.info('您取消了删除')
       }
     }
   }
