@@ -26,7 +26,8 @@ export default {
       }
       return year + (month < 10 ? '0' + month : month) + (date < 10 ? '0' + date : date)
     },
-    async onSuccess({ results }) {
+    async onSuccess({ header, results }) {
+      console.log(results)
       const userRelations = {
         '入职日期': 'timeOfEntry',
         '手机号': 'mobile',

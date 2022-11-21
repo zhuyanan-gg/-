@@ -120,15 +120,15 @@ export default {
   },
   methods: {
     onClose() {
-      // this.formDate = {
-      //   username: '',
-      //   mobile: '',
-      //   formOfEmployment: '',
-      //   workNumber: '',
-      //   departmentName: '',
-      //   timeOfEntry: '',
-      //   correctionTime: ''
-      // }
+      this.formDate = {
+        username: '',
+        mobile: '',
+        formOfEmployment: '',
+        workNumber: '',
+        departmentName: '',
+        timeOfEntry: '',
+        correctionTime: ''
+      }
       this.deptName = []
       this.$refs.employeeFormRef.resetFields()
       this.$emit('update:show-dialog', false)

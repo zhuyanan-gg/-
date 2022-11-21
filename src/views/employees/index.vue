@@ -6,7 +6,7 @@
       <PageTools is-show-left>
         <template #left> 显示{{ total }}条数据 </template>
         <template #right>
-          <el-button type="danger" size="samll">excel导出</el-button>
+          <el-button type="danger" size="samll" @click="export2excel">excel导出</el-button>
           <el-button type="success" size="samll" @click="$router.push('./import')">excel导入</el-button>
           <el-button type="primary" size="samll" @click="showDialog = true">新增员工</el-button>
         </template>
@@ -49,7 +49,7 @@
           </el-table-column>
           <el-table-column label="操作" width="300">
             <template v-slot="{ row }">
-              <el-button type="text">查看</el-button>
+              <el-button type="text" @click="$router.push(`/employees/detail/${row.id}`)">查看</el-button>
               <el-button type="text">转正</el-button>
               <el-button type="text">调岗</el-button>
               <el-button type="text">离职</el-button>
@@ -138,6 +138,52 @@ export default {
       } catch (error) {
         this.$message.info('您取消了删除')
       }
+    },
+    // 导出excel文档
+    export2excel() {
+      const headers = {
+        '手机号': 'mobile',
+        '姓名': 'username',
+        '入职日期': 'timeOfEntry',
+        '聘用形式': 'formOfEmployment',
+        '转正日期': 'correctionTime',
+        '工号': 'workNumber',
+        '部门': 'departmentName'
+      }
+      // console.log(Object.keys(headers))
+      import('@/vendor/Export2Excel').then(async excel => {
+        const { rows } = await getEmployeeList({ page: 1, size: this.total })
+        const data = this.formatData(rows, headers)
+
+        excel.export_json_to_excel({
+          header: Object.keys(headers), // 表头 必填
+          data: data, // 具体数据 必填
+          filename: '', // 非必填
+          autoWidth: true, // 非必填
+          bookType: 'xlsx' // 非必填1
+        })
+      })
+    },
+    formatData(list, header) {
+      return list.map(item => {
+        return Object.values(header).map(key => {
+          if (key === 'timeOfEntry' || key === 'correctionTime') {
+            return this.formatDate(item[key]) // 返回格式化之前的时间
+          } else if (key === 'formOfEmployment') {
+            const person = this.hireType.find(x => x.id === +item[key])
+            return person ? person.value : '未知'
+          } else {
+            return item[key]
+          }
+        })
+      })
+    },
+    formatDate(numb) {
+      const time = new Date(numb)
+      const year = time.getFullYear()
+      const month = (time.getMonth() + 1 + '').padStart(2, 0)
+      const date = (time.getDate() + '').padStart(2, 0)
+      return year + '-' + month + '-' + date
     }
   }
 }
