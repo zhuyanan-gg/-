@@ -21,7 +21,12 @@
           <!-- 格式化头像 -->
           <el-table-column label="头像" prop="staffPhoto" width="110">
             <template v-slot="{ row }">
-              <img v-imgerror="defaultImg" :src="row.staffPhoto" class="satff-img">
+              <img
+                v-imgerror="defaultImg"
+                :src="row.staffPhoto"
+                class="satff-img"
+                @click="showQr(row.staffPhoto)"
+              >
             </template>
           </el-table-column>
           <el-table-column label="手机号" prop="mobile" width="120" />
@@ -70,6 +75,17 @@
         />
       </el-card>
 
+      <el-dialog
+        title="二维码"
+        width="30%"
+        :visible="isShowQr"
+        @close="onCloseQr"
+      >
+        <el-row type="flex" justify="center">
+          <canvas ref="myCanvas" />
+        </el-row>
+      </el-dialog>
+
       <!-- 对话框 -->
       <AddDemployee :show-dialog.sync="showDialog" @update-list="loadList()" /></div>
   </div>
@@ -80,6 +96,7 @@ import { getEmployeeList, delEmployee } from '@/api/employees'
 import employee from '@/api/constant/employees'
 import defaultImg from '@/assets/common/1.png'
 import AddDemployee from '@/views/employees/components/dialog-employee.vue'
+import QrCode from 'qrcode'
 
 export default {
   name: 'Employees',
@@ -88,6 +105,7 @@ export default {
   },
   data() {
     return {
+      isShowQr: false,
       pageInfo: {
         page: 1,
         size: 10
@@ -154,7 +172,7 @@ export default {
       import('@/vendor/Export2Excel').then(async excel => {
         const { rows } = await getEmployeeList({ page: 1, size: this.total })
         const data = this.formatData(rows, headers)
-
+        // console.log(data)
         excel.export_json_to_excel({
           header: Object.keys(headers), // 表头 必填
           data: data, // 具体数据 必填
@@ -184,7 +202,22 @@ export default {
       const month = (time.getMonth() + 1 + '').padStart(2, 0)
       const date = (time.getDate() + '').padStart(2, 0)
       return year + '-' + month + '-' + date
+    },
+    showQr(url) {
+      // url存在的情况下 才弹出层
+      if (url) {
+        this.isShowQr = true
+        this.$nextTick(() => {
+          QrCode.toCanvas(this.$refs.myCanvas, url)
+        })
+      } else {
+        this.$message.warning('这是默认头像，请更新头像查看二维码')
+      }
+    },
+    onCloseQr() {
+      this.isShowQr = false
     }
+
   }
 }
 </script>

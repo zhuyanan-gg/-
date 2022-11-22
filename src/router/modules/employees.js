@@ -10,9 +10,15 @@ export default {
       meta: { title: '员工管理', icon: 'people' }
     },
     {
-      path: 'detail/:id',
+      path: 'detail/:userId',
       component: () => import('@/views/employees/components/detail'),
-      hidden: true // 不在左侧菜单显示
+      hidden: true, // 不在左侧菜单显示
+      props: true
+    },
+    {
+      path: 'print/:id',
+      component: () => import('@/views/employees/components/print'),
+      hidden: true
     }
   ]
 }
