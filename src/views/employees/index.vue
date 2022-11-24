@@ -58,7 +58,7 @@
               <el-button type="text">转正</el-button>
               <el-button type="text">调岗</el-button>
               <el-button type="text">离职</el-button>
-              <el-button type="text">角色</el-button>
+              <el-button type="text" @click="allotRole(row.id)">角色</el-button>
               <el-button type="text" @click="onDeleteEmployee(row.id)">删除</el-button>
             </template>
           </el-table-column>
@@ -75,6 +75,7 @@
         />
       </el-card>
 
+      <!-- 二维码 -->
       <el-dialog
         title="二维码"
         width="30%"
@@ -88,6 +89,9 @@
 
       <!-- 对话框 -->
       <AddDemployee :show-dialog.sync="showDialog" @update-list="loadList()" /></div>
+
+    <!-- 角色分配 -->
+    <RoleDialog ref="renderRoleList" :is-show.sync="isShowAllot" :user-id="userId" />
   </div>
 </template>
 
@@ -97,11 +101,13 @@ import employee from '@/api/constant/employees'
 import defaultImg from '@/assets/common/1.png'
 import AddDemployee from '@/views/employees/components/dialog-employee.vue'
 import QrCode from 'qrcode'
+import RoleDialog from '@/views/employees/components/role-dialog.vue'
 
 export default {
   name: 'Employees',
   components: {
-    AddDemployee
+    AddDemployee,
+    RoleDialog
   },
   data() {
     return {
@@ -115,6 +121,8 @@ export default {
       loading: true,
       hireType: employee.hireType,
       showDialog: false,
+      isShowAllot: false,
+      userId: '',
       defaultImg
     }
   },
@@ -203,6 +211,7 @@ export default {
       const date = (time.getDate() + '').padStart(2, 0)
       return year + '-' + month + '-' + date
     },
+    // 二维码
     showQr(url) {
       // url存在的情况下 才弹出层
       if (url) {
@@ -216,6 +225,13 @@ export default {
     },
     onCloseQr() {
       this.isShowQr = false
+    },
+    // 角色分配
+    async allotRole(id) {
+      this.isShowAllot = true
+      this.userId = id
+      await this.$refs.renderRoleList.getRoleListRender()
+      await this.$refs.renderRoleList.getRoleListRef(id)
     }
 
   }

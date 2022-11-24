@@ -1,7 +1,7 @@
 <template>
   <div class="job-info">
-    <el-row type="flex" justify="end" style="margin-bottom:20px;margin-top:20px;">
-      <el-button type="primary" icon="el-icon-printer" size="samll">打印</el-button>
+    <el-row type="flex" justify="end" style="margin-bottom:30px;margin-top:20px;">
+      <el-button type="primary" icon="el-icon-printer" size="samll" @click="$router.push(`/employees/print/${userId}?type=job`)">打印</el-button>
     </el-row>
     <!-- 基础信息 -->
     <el-form label-width="220px">

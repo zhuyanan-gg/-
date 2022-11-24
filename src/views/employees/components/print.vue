@@ -2,6 +2,9 @@
   <div id="myPrint" class="dashboard-container">
     <div class="app-container">
       <el-card>
+        <el-row type="flex" justify="end">
+          <el-button v-print="`${type==='personal'? '#printPersonalRange':'#jobInfoRange'}`" type="primary">打印</el-button>
+        </el-row>
         <el-breadcrumb separator="/" class="titInfo ">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
           <el-breadcrumb-item>
@@ -9,7 +12,7 @@
           </el-breadcrumb-item>
           <el-breadcrumb-item>打印</el-breadcrumb-item>
         </el-breadcrumb>
-        <div v-if="type === 'personal'">
+        <div v-if="type === 'personal'" id="printPersonalRange">
           <h2 class="centInfo">员工信息表</h2>
           <table cellspacing="0" width="100%" class="tableList">
             <tr class="title">
@@ -31,7 +34,7 @@
             </tr>
             <tr>
               <th>出生日期</th>
-              <td colspan="6">{{ formData.dateOfBirth | formatDate }}</td>
+              <td colspan="6">{{ formData.dateOfBirth }}</td>
             </tr>
             <tr>
               <th>最高学历</th>
@@ -68,8 +71,8 @@
               <td colspan="5">{{ formData.maritalStatus }}</td>
             </tr>
             <tr>
-              <th>员工照片</th>
-              <td>{{ formData.staffPhoto }}</td>
+              <th>个人邮箱</th>
+              <td>{{ formData.personalMailbox }}</td>
               <th>生日</th>
               <td colspan="5">{{ formData.birthday }}</td>
             </tr>
@@ -137,8 +140,6 @@
               <td colspan="5">{{ formData.contactTheMobilePhone }}</td>
             </tr>
             <tr>
-              <th>个人邮箱</th>
-              <td>{{ formData.personalMailbox }}</td>
               <th>紧急联系人</th>
               <td colspan="5">{{ formData.emergencyContact }}</td>
             </tr>
@@ -210,7 +211,7 @@
           </table>
           <div class="foot">签字：___________日期:___________</div>
         </div>
-        <div v-else>
+        <div v-else id="jobInfoRange">
           <h2 class="centInfo">岗位信息表</h2>
           <table cellspacing="0" width="100%" class="tableList">
             <tr class="title">
@@ -331,6 +332,7 @@
 import { getPersonalDetail, getJobDetail } from '@/api/employees'
 import { getUserDetailById } from '@/api/user'
 export default {
+  name: 'Print',
   data() {
     return {
       formData: {},
@@ -360,6 +362,10 @@ export default {
 .foot {
   padding: 30px 0;
   text-align: right;
+}
+.imgSamll {
+  width: 100px;
+  height: 100px;
 }
 </style>
 
