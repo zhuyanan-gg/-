@@ -53,8 +53,8 @@ export const constantRoutes = [
 const asyncRoutes = [
   departmentsRouter,
   employeesRouter,
-  approvalsRouter,
   permissionRouter,
+  approvalsRouter,
   attendancesRouter,
   salarysRouter,
   socialRouter,

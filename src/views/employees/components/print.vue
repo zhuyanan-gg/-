@@ -209,7 +209,6 @@
               <td colspan="5">{{ formData.remarks }}</td>
             </tr>
           </table>
-          <div class="foot">签字：___________日期:___________</div>
         </div>
         <div v-else id="jobInfoRange">
           <h2 class="centInfo">岗位信息表</h2>
