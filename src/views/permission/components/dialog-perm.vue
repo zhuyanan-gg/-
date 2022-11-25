@@ -112,6 +112,7 @@ export default {
         this.$message.warning('校验未通过')
       }
     },
+    // 点击编辑回显
     async getDetail(id) {
       this.formData = await getPermissionDetail(id)
     }

@@ -20,7 +20,7 @@
               <el-table-column label="描述" prop="description" />
               <el-table-column label="操作">
                 <template v-slot="{ row }">
-                  <el-button size="small" type="success" icon="el-icon-setting">分配权限</el-button>
+                  <el-button size="small" type="success" icon="el-icon-setting" @click="onAllotRole(row.id)">分配权限</el-button>
                   <el-button size="small" type="primary" icon="el-icon-edit" @click="onEditRole(row.id)">编辑</el-button>
                   <el-button size="small" type="danger" icon="el-icon-delete" @click="onDelRole(row.id)">删除</el-button>
                 </template>
@@ -64,7 +64,10 @@
 
         </el-tabs>
       </el-card>
+      <!-- 编辑 -->
       <RoleDialog ref="roleDialogRef" :is-visible.sync="isVisible" @update-list="loadList" />
+      <!-- 分配 -->
+      <DialogAllot ref="dialogRoleRef" :is-show.sync="isShowAllot" />
     </div>
   </div>
 </template>
@@ -73,10 +76,13 @@
 import RoleDialog from '@/views/setting/components/role-dialog.vue'
 import { getRoleList, getCompanyInfo, deleteRole } from '@/api/setting'
 import { mapGetters } from 'vuex'
+import DialogAllot from './components/allot-dialog.vue'
+
 export default {
   name: 'SettingPage',
   components: {
-    RoleDialog
+    RoleDialog,
+    DialogAllot
   },
   data() {
     return {
@@ -91,7 +97,8 @@ export default {
       total: 0,
       roleList: [],
       companyInfo: {},
-      isVisible: false
+      isVisible: false,
+      isShowAllot: false
     }
   },
   computed: {
@@ -115,6 +122,7 @@ export default {
       this.pageInfo.page = newPage
       this.loadList()
     },
+    // 分页切换时判断选择的页名
     handleClick() {
       if (this.activeName === 'company') {
         if (!Object.keys(this.companyInfo).length) {
@@ -122,9 +130,11 @@ export default {
         }
       }
     },
+    // 获取公司信息
     async loadCompanyInfo() {
       this.companyInfo = await getCompanyInfo(this.companyId)
     },
+    // 删除角色
     async onDelRole(id) {
       try {
         await this.$confirm('您确认要删除该角色吗')
@@ -138,9 +148,15 @@ export default {
         this.$message.info('您取消了删除')
       }
     },
+    // 编辑角色
     async onEditRole(id) {
       this.$refs.roleDialogRef.getDetail(id)
       this.isVisible = true
+    },
+    //   分配权限
+    onAllotRole(id) {
+      this.$refs.dialogRoleRef.getRoleDetails(id)
+      this.isShowAllot = true
     }
   }
 }
