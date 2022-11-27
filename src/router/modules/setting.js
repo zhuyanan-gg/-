@@ -3,6 +3,7 @@ export default {
   // 和部门相关的路由
   path: '/setting',
   component: Layout,
+  name: 'settings',
   children: [
     {
       path: '',

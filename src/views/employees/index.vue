@@ -6,9 +6,10 @@
       <PageTools is-show-left>
         <template #left> 显示{{ total }}条数据 </template>
         <template #right>
-          <el-button type="danger" size="samll" @click="export2excel">excel导出</el-button>
-          <el-button type="success" size="samll" @click="$router.push('./import')">excel导入</el-button>
-          <el-button type="primary" size="samll" @click="showDialog = true">新增员工</el-button>
+          <!-- mixin  导入和导出权限 -->
+          <el-button v-if="checkPermission('export')" type="danger" size="samll" @click="export2excel">excel导出</el-button>
+          <el-button v-if="checkPermission('import')" type="success" size="samll" @click="$router.push('./import')">excel导入</el-button>
+          <el-button type="primary" size="samll" icon="el-icon-plus" @click="showDialog = true">新增员工</el-button>
         </template>
       </PageTools>
 
@@ -47,19 +48,14 @@
               {{ row.timeOfEntry | formatDate }}
             </template>
           </el-table-column>
-          <el-table-column label="账户状态" prop="enableState">
+          <el-table-column label="操作" width="380" align="center">
             <template v-slot="{ row }">
-              <el-switch active-color="#13ce66" :value="row.enableState == 1" />
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="300">
-            <template v-slot="{ row }">
-              <el-button type="text" @click="$router.push(`/employees/detail/${row.id}`)">查看</el-button>
-              <el-button type="text">转正</el-button>
-              <el-button type="text">调岗</el-button>
-              <el-button type="text">离职</el-button>
-              <el-button type="text" @click="allotRole(row.id)">角色</el-button>
-              <el-button type="text" @click="onDeleteEmployee(row.id)">删除</el-button>
+              <el-button type="primary" circle @click="$router.push(`/employees/detail/${row.id}`)">查看</el-button>
+              <el-button type="success" circle @click="regular(row.id)">转正</el-button>
+              <el-button type="warning" circle @click="$router.push(`/employees/detail/${row.id}`)">调岗</el-button>
+              <el-button type="danger" circle @click="onDeleteEmployee(row.id,1)">离职</el-button>
+              <el-button type="info" circle @click="allotRole(row.id)">角色</el-button>
+              <el-button type="danger" icon="el-icon-delete" circle @click="onDeleteEmployee(row.id)" />
             </template>
           </el-table-column>
         </el-table>
@@ -102,6 +98,8 @@ import defaultImg from '@/assets/common/1.png'
 import AddDemployee from '@/views/employees/components/dialog-employee.vue'
 import QrCode from 'qrcode'
 import RoleDialog from '@/views/employees/components/role-dialog.vue'
+import { saveUserDetail } from '@/api/employees'
+import { getUserDetailById } from '@/api/user'
 
 export default {
   name: 'Employees',
@@ -152,17 +150,31 @@ export default {
       const hire = this.hireType.find(item => item.id === +cellValue)
       return hire ? hire['value'] : '未知'
     },
-    async onDeleteEmployee(id) {
-      try {
-        await this.$confirm('您确认删除吗')
-        await delEmployee(id)
-        this.$message.success('删除成功')
-        if (this.list.length === 1) {
-          this.pageInfo.page = this.pageInfo.page > 1 ? this.pageInfo.page - 1 : 1
+    async onDeleteEmployee(id, num) {
+      if (num === 1) {
+        try {
+          await this.$confirm('请确认是否离职')
+          await delEmployee(id)
+          this.$message.success('已办理离职')
+          if (this.list.length === 1) {
+            this.pageInfo.page = this.pageInfo.page > 1 ? this.pageInfo.page - 1 : 1
+          }
+          this.loadList()
+        } catch (error) {
+          this.$message.info('您取消了离职操作')
         }
-        this.loadList()
-      } catch (error) {
-        this.$message.info('您取消了删除')
+      } else {
+        try {
+          await this.$confirm('您确认删除吗')
+          await delEmployee(id)
+          this.$message.success('删除成功')
+          if (this.list.length === 1) {
+            this.pageInfo.page = this.pageInfo.page > 1 ? this.pageInfo.page - 1 : 1
+          }
+          this.loadList()
+        } catch (error) {
+          this.$message.info('您取消了删除')
+        }
       }
     },
     // 导出excel文档
@@ -227,13 +239,19 @@ export default {
       this.isShowQr = false
     },
     // 角色分配
-    async allotRole(id) {
+    allotRole(id) {
       this.isShowAllot = true
       this.userId = id
-      await this.$refs.renderRoleList.getRoleListRender()
-      await this.$refs.renderRoleList.getRoleListRef(id)
+      this.$refs.renderRoleList.getRoleListRef(id)
+    },
+    // 转正
+    async regular(id) {
+      const data = await getUserDetailById(id)
+      data.formOfEmployment = 1
+      await saveUserDetail(data)
+      this.loadList()
+      this.$message.success('转正成功')
     }
-
   }
 }
 </script>
@@ -254,6 +272,9 @@ export default {
   }
   img {
     border-radius: 50%;
+  }
+  .el-button {
+    font-size: 13px;
   }
 }
 </style>

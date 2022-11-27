@@ -37,9 +37,12 @@ export default {
     return {
       checkList: [],
       list: [],
-      roleId: [],
-      isLoading: true
+      isLoading: true,
+      roleId: []
     }
+  },
+  mounted() {
+    this.getRoleListRender()
   },
   methods: {
     onClose() {
@@ -48,7 +51,6 @@ export default {
     },
     // 获取全部角色
     async getRoleListRender() {
-      this.isLoading = false
       const { rows } = await getRoleList()
       this.list = rows
     },
@@ -56,6 +58,7 @@ export default {
     async getRoleListRef(id) {
       const { roleIds } = await getUserDetailById(id)
       this.roleId = roleIds || []
+      this.isLoading = false
     },
     // 给员工分配角色
     async confirm() {

@@ -3,6 +3,7 @@ export default {
   // 和部门相关的路由
   path: '/social',
   component: Layout,
+  name: 'social_securitys',
   children: [
     {
       path: '',

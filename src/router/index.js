@@ -50,7 +50,7 @@ export const constantRoutes = [
     }]
   }
 ]
-const asyncRoutes = [
+export const asyncRoutes = [
   departmentsRouter,
   employeesRouter,
   permissionRouter,
@@ -62,18 +62,17 @@ const asyncRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  // 打开一个路由界面默认会在最顶部
   scrollBehavior: () => ({ y: 0 }),
-  routes: [...constantRoutes, ...asyncRoutes,
-
-    // 404必须在路由的最底部
-    { path: '*', redirect: '/404', hidden: true }]
+  // routes: [...constantRoutes, ...asyncRoutes,
+  //   // 404必须在路由的最底部
+  //   { path: '*', redirect: '/404', hidden: true }]
+  routes: [...constantRoutes]
 })
 
 const router = createRouter()
 
-// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
-// 重置路由
+// 重置路由的方法
 export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
